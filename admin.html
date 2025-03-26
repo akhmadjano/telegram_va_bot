@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oqtepa Lavash | Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #dc3545;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-left: 20px;
+            flex-grow: 1;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-back {
+            background-color: white;
+            color: #dc3545;
+        }
+        
+        .btn-back:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-primary {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c82333;
+        }
+        
+        .notification-badge {
+            background-color: #ffc107;
+            color: #212529;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            color: #6c757d;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #dc3545;
+            margin: 10px 0;
+        }
+        
+        .orders-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .order-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .order-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-id {
+            font-weight: bold;
+            color: #dc3545;
+        }
+        
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-new {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .status-processing {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .status-completed {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .status-cancelled {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .customer-info {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .order-items {
+            margin-bottom: 15px;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .order-total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 15px 0;
+            color: #dc3545;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            background-color: white;
+        }
+        
+        /* Notification Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+        }
+        
+        /* Message notification styles */
+        .message-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.5s, fadeOut 0.5s 2.5s forwards;
+            max-width: 350px;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .message-notification.error {
+            background-color: #dc3545;
+        }
+        
+        .message-notification.warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .message-notification.info {
+            background-color: #17a2b8;
+        }
+        
+        .notification-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        /* Highlight animation */
+        @keyframes highlight {
+            0% { background-color: rgba(255, 255, 0, 0.5); }
+            100% { background-color: transparent; }
+        }
+        
+        .highlight {
+            animation: highlight 2s;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+            
+            h1 {
+                margin: 10px 0;
+                font-size: 20px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .action-buttons select {
+                width: 100%;
+            }
+            
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <a href="index.html" class="btn btn-back">Orqaga</a>
+        <h1>Oqtepa Lavash | Admin Panel</h1>
+        <div style="position: absolute; right: 120px; top: 50%; transform: translateY(-50%);">
+            <a href="products-admin.html" class="btn btn-secondary">Mahsulotlar</a>
+        </div>
+        <div id="notification-icon" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="showNotifications()">
+            🔔 <span id="notification-count" class="notification-badge" style="display: none;">0</span>
+        </div>
+    </header>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>Bugungi daromad</h3>
+            <div class="stat-value" id="today-income">0 so'm</div>
+        </div>
+        <div class="stat-card">
+            <h3>Bugungi buyurtmalar</h3>
+            <div class="stat-value" id="today-orders">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Eng ko'p sotilgan mahsulot</h3>
+            <div class="stat-value" id="top-product">-</div>
+        </div>
+    </div>
+
+    <div class="orders-container" id="orders-container">
+        <!-- Buyurtmalar shu yerda yuklanadi -->
+    </div>
+</div>
+
+<!-- Notification modal -->
+<div id="notification-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeNotificationModal()">&times;</span>
+        <h2>Bildirishnomalar</h2>
+        <div id="notifications-list">
+            <!-- Bildirishnomalar shu yerda ko'rsatiladi -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // DOM yuklanganda buyurtmalarni yuklash
+    document.addEventListener('DOMContentLoaded', function() {
+        loadOrders();
+        loadStats();
+        updateNotificationCount();
+        checkNewOrders();
+        checkUrlForOrder();
+        simulateUserMessages();
+    });
+
+    // URLdan kelgan buyurtma ma'lumotlarini o'qish
+    function checkUrlForOrder() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order_id');
+        const userId = urlParams.get('user_id');
+        const username = urlParams.get('username');
+        const chatId = urlParams.get('chat_id');
+        const items = urlParams.get('items');
+        const total = urlParams.get('total');
+        const message = urlParams.get('message');
+        
+        if (orderId) {
+            // Buyurtma ma'lumotlarini olish
+            const orderData = {
+                id: parseInt(orderId),
+                date: new Date().toLocaleString(),
+                customerName: username || "Telegram mijoz",
+                phoneNumber: "Telegram: " + (userId || "Noma'lum"),
+                address: "Telegram orqali",
+                items: items ? JSON.parse(decodeURIComponent(items)) : [
+                    {
+                        id: 1,
+                        name: "Lavash",
+                        price: 25000,
+                        quantity: 1
+                    }
+                ],
+                total: total ? parseInt(total) : 25000,
+                status: "Yangi",
+                message: message || "Telegram bot orqali buyurtma"
+            };
+            
+            // LocalStorageda saqlash
+            saveOrderToLocalStorage(orderData);
+            
+            // Bildirishnoma yaratish
+            createNotification(orderId, `Yangi Telegram buyurtma #${orderId}`);
+            
+            // URLni tozalash
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Xabarni ko'rsatish
+            showMessage(`Yangi Telegram buyurtma qabul qilindi! #${orderId}`, 'success');
+            
+            // Yangi ovozni ijro etish
+            playNewOrderSound();
+            
+            // Yangilash
+            loadOrders();
+            loadStats();
+            updateNotificationCount();
+        }
+    }
+    
+    // Buyurtmalarni yuklash
+    function loadOrders() {
+        const ordersContainer = document.getElementById('orders-container');
+        ordersContainer.innerHTML = '';
+
+        const orders = JSON.parse(localStorage.getItem('oqtepaOrders')) || [];
+        
+        if (orders.length === 0) {
+            ordersContainer.innerHTML = '<p style="text-align: center; padding: 20px; color: #6c757d;">Hozircha buyurtmalar mavjud emas</p>';
+            return;
+        }
+
+        // Sort by date (newest first)
+        orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        orders.forEach(order => {
+            const orderCard = document.createElement('div');
+            orderCard.className = 'order-card';
+            orderCard.id = `order-${order.id}`;
+            
+            // Format items list
+            let itemsHtml = '';
+            order.items.forEach(item => {
+                itemsHtml += `
+                    <div class="order-item">
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div>${item.price.toLocaleString()} so'm × ${item.quantity}</div>
+                        </div>
+                        <div>${(item.price * item.quantity).toLocaleString()} so'm</div>
+                    </div>
+                `;
+            });
+
+            // Determine status class
+            let statusClass = 'status-new';
+            if (order.status === "Qabul qilindi") statusClass = 'status-processing';
+            else if (order.status === "Yakunlandi") statusClass = 'status-completed';
+            else if (order.status === "Bekor qilindi") statusClass = 'status-cancelled';
+
+            orderCard.innerHTML = `
+                <div class="order-header">
+                    <div>
+                        <span class="order-id">Buyurtma #${order.id}</span>
+                        <span>${order.date}</span>
+                    </div>
+                    <span class="order-status ${statusClass}">${order.status}</span>
+                </div>
+                
+                <div class="customer-info">
+                    <p><strong>Mijoz:</strong> ${order.customerName}</p>
+                    <p><strong>Telefon:</strong> ${order.phoneNumber}</p>
+                    <p><strong>Manzil:</strong> ${order.address}</p>
+                    ${order.message ? `<p><strong>Xabar:</strong> <em>"${order.message}"</em></p>` : ''}
+                </div>
+                
+                <div class="order-items">
+                    <h3>Buyurtma tarkibi:</h3>
+                    ${itemsHtml}
+                </div>
+                
+                <div class="order-total">
+                    Jami: ${order.total.toLocaleString()} so'm
+                </div>
+                
+                <div class="action-buttons">
+                    <select id="status-${order.id}" onchange="updateOrderStatus(${order.id})">
+                        <option value="Yangi" ${order.status === "Yangi" ? "selected" : ""}>Yangi</option>
+                        <option value="Qabul qilindi" ${order.status === "Qabul qilindi" ? "selected" : ""}>Qabul qilindi</option>
+                        <option value="Yakunlandi" ${order.status === "Yakunlandi" ? "selected" : ""}>Yakunlandi</option>
+                        <option value="Bekor qilindi" ${order.status === "Bekor qilindi" ? "selected" : ""}>Bekor qilindi</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="deleteOrder(${order.id})">O'chirish</button>
+                </div>
+            `;
+
+            ordersContainer.appendChild(orderCard);
+        });
+    }
+
+    // Buyurtmani LocalStorageda saqlash
+    function saveOrderToLocalStorage(orderData) {
+        let orders = JSON.parse(localStorage.getItem('oqtepaOrders')) || [];
+        
+        // Agar bunday IDli buyurtma bo'lmasa
+        if (!orders.some(order => order.id === orderData.id)) {
+            orders.push(orderData);
+            localStorage.setItem('oqtepaOrders', JSON.stringify(orders));
+        }
+    }
+
+    // Buyurtma holatini yangilash
+    function updateOrderStatus(orderId) {
+        const orders = JSON.parse(localStorage.getItem('oqtepaOrders')) || [];
+        const orderIndex = orders.findIndex(order => order.id === orderId);
+        
+        if (orderIndex !== -1) {
+            const newStatus = document.getElementById(`status-${orderId}`).value;
+            orders[orderIndex].status = newStatus;
+            
+            // Agar buyurtma yakunlansa, foydalanuvchiga xabar yuborish
+            if (newStatus === "Yakunlandi") {
+                const order = orders[orderIndex];
+                localStorage.setItem('oqtepaUserPhone', order.phoneNumber);
+                
+                // Mahsulotlar statistikasini yangilash
+                updateProductStats(order.items);
+                
+                // Xabarni ko'rsatish
+                showMessage(`Buyurtma #${orderId} yakunlandi!`, 'success');
+            } else if (newStatus === "Bekor qilindi") {
+                showMessage(`Buyurtma #${orderId} bekor qilindi!`, 'error');
+            } else {
+                showMessage(`Buyurtma #${orderId} holati yangilandi!`, 'info');
+            }
+            
+            localStorage.setItem('oqtepaOrders', JSON.stringify(orders));
+            loadOrders();
+        }
+    }
+
+    // Mahsulotlar statistikasini yangilash
+    function updateProductStats(items) {
+        let stats = JSON.parse(localStorage.getItem('oqtepaProductStats')) || {};
+        
+        items.forEach(item => {
+            if (!stats[item.id]) {
+                stats[item.id] = {
+                    name: item.name,
+                    count: 0,
+                    total: 0
+                };
+            }
+            stats[item.id].count += item.quantity;
+            stats[item.id].total += item.price * item.quantity;
+        });
+        
+        localStorage.setItem('oqtepaProductStats', JSON.stringify(stats));
+    }
+
+    // Buyurtmani o'chirish
+    function deleteOrder(orderId) {
+        if (confirm(`Buyurtma #${orderId} ni o'chirishni tasdiqlaysizmi?`)) {
+            let orders = JSON.parse(localStorage.getItem('oqtepaOrders')) || [];
+            orders = orders.filter(order => order.id !== orderId);
+            localStorage.setItem('oqtepaOrders', JSON.stringify(orders));
+            loadOrders();
+            showMessage(`Buyurtma #${orderId} o'chirildi!`, 'warning');
+        }
+    }
+
+    // Statistikani yuklash
+    function loadStats() {
+        const orders = JSON.parse(localStorage.getItem('oqtepaOrders')) || [];
+        const today = new Date().toLocaleDateString();
+        
+        // Bugungi buyurtmalar
+        const todayOrders = orders.filter(order => 
+            new Date(order.date).toLocaleDateString() === today
+        );
+        
+        // Bugungi daromad
+        const todayIncome = todayOrders.reduce((sum, order) => sum + order.total, 0);
+        
+        // Eng ko'p sotilgan mahsulot
+        const stats = JSON.parse(localStorage.getItem('oqtepaProductStats')) || {};
+        let topProduct = "-";
+        let maxCount = 0;
+        
+        for (const id in stats) {
+            if (stats[id].count > maxCount) {
+                maxCount = stats[id].count;
+                topProduct = stats[id].name;
+            }
+        }
+        
+        // UI ni yangilash
+        document.getElementById('today-income').textContent = todayIncome.toLocaleString() + ' so\'m';
+        document.getElementById('today-orders').textContent = todayOrders.length;
+        document.getElementById('top-product').textContent = topProduct;
+    }
+
+    // Yangi buyurtmalarni tekshirish
+    function checkNewOrders() {
+        const notifications = JSON.parse(localStorage.getItem('oqtepaNotifications')) || [];
+        const unreadNotifications = notifications.filter(n => !n.read);
+        
+        if (unreadNotifications.length > 0) {
+            playNewOrderSound();
+            updateNotificationCount();
+            
+            // Yangi xabarlarni ko'rsatish
+            unreadNotifications.forEach(notification => {
+                showMessage(notification.message, 'info');
+            });
+        }
+    }
+
+    // Bildirishnomalar sonini yangilash
+    function updateNotificationCount() {
+        const notifications = JSON.parse(localStorage.getItem('oqtepaNotifications')) || [];
+        const unreadNotifications = notifications.filter(n => !n.read);
+        const countElement = document.getElementById('notification-count');
+        
+        if (unreadNotifications.length > 0) {
+            countElement.textContent = unreadNotifications.length;
+            countElement.style.display = 'inline-flex';
+        } else {
+            countElement.style.display = 'none';
+        }
+    }
+
+    // Yangi bildirishnoma yaratish
+    function createNotification(orderId, message) {
+        let notifications = JSON.parse(localStorage.getItem('oqtepaNotifications')) || [];
+        
+        notifications.push({
+            id: Date.now(),
+            orderId: orderId,
+            message: message,
+            date: new Date().toLocaleString(),
+            read: false
+        });
+        
+        localStorage.setItem('oqtepaNotifications', JSON.stringify(notifications));
+    }
+
+    // Bildirishnomalar modali
+    function showNotifications() {
+        const notifications = JSON.parse(localStorage.getItem('oqtepaNotifications')) || [];
+        const notificationsList = document.getElementById('notifications-list');
+        notificationsList.innerHTML = '';
+        
+        if (notifications.length === 0) {
+            notificationsList.innerHTML = '<p style="text-align: center; padding: 20px; color: #6c757d;">Bildirishnomalar mavjud emas</p>';
+        } else {
+            // Sort by date (newest first)
+            notifications.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            notifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = 'notification-item';
+                notificationItem.style.padding = '12px';
+                notificationItem.style.marginBottom = '8px';
+                notificationItem.style.borderRadius = '4px';
+                notificationItem.style.borderLeft = `4px solid ${notification.read ? '#6c757d' : '#dc3545'}`;
+                notificationItem.style.backgroundColor = notification.read ? '#f8f9fa' : '#fff';
+                notificationItem.style.cursor = 'pointer';
+                notificationItem.style.transition = 'all 0.3s ease';
+                
+                notificationItem.innerHTML = `
+                    <div style="font-weight: ${notification.read ? 'normal' : 'bold'}; margin-bottom: 5px;">${notification.message}</div>
+                    <div style="font-size: 12px; color: #6c757d;">${notification.date}</div>
+                `;
+                
+                notificationItem.onmouseenter = function() {
+                    this.style.backgroundColor = '#e9ecef';
+                };
+                
+                notificationItem.onmouseleave = function() {
+                    this.style.backgroundColor = notification.read ? '#f8f9fa' : '#fff';
+                };
+                
+                notificationItem.onclick = function() {
+                    // Mark as read
+                    notification.read = true;
+                    localStorage.setItem('oqtepaNotifications', JSON.stringify(notifications));
+                    updateNotificationCount();
+                    
+                    // Scroll to order
+                    const orderElement = document.getElementById(`order-${notification.orderId}`);
+                    if (orderElement) {
+                        orderElement.scrollIntoView({ behavior: 'smooth' });
+                        orderElement.classList.add('highlight');
+                        setTimeout(() => {
+                            orderElement.classList.remove('highlight');
+                        }, 2000);
+                    }
+                    
+                    closeNotificationModal();
+                };
+                
+                notificationsList.appendChild(notificationItem);
+            });
+        }
+        
+        document.getElementById('notification-modal').style.display = 'block';
+    }
+
+    function closeNotificationModal() {
+        document.getElementById('notification-modal').style.display = 'none';
+    }
+
+    function playNewOrderSound() {
+        const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+        audio.play().catch(e => console.log("Audio play error:", e));
+    }
+    
+    // Foydalanuvchi xabarlarini ko'rsatish
+    function showMessage(message, type = 'info') {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message-notification ${type}`;
+        
+        let icon = 'ℹ️';
+        if (type === 'success') icon = '✅';
+        else if (type === 'error') icon = '❌';
+        else if (type === 'warning') icon = '⚠️';
+        
+        messageDiv.innerHTML = `
+            <span class="notification-icon">${icon}</span>
+            <span>${message}</span>
+        `;
+        
+        document.body.appendChild(messageDiv);
+        
+        // 3 sekunddan keyin olib tashlash
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 3000);
+    }
+    
+    // Foydalanuvchi xabarlarini simulyatsiya qilish
+    function simulateUserMessages() {
+        // Har 10-30 sekund oralig'ida tasodifiy xabar yuborish
+        setTimeout(() => {
+            const messages = [
+                "Iltimos, pitsani yupqa qilib tayyorlang!",
+                "Salatni ko'proq soling, iltimos!",
+                "Yetkazib berishga shoshiling!",
+                "Ketchup alohida qopqoqda bersangiz bo'ladi!",
+                "Buyurtmamga e'tibor bering, iltimos!",
+                "Nonini qovurilgan qilib bersangiz!",
+                "Achchiq emas, oddiy qilib tayyorlang!"
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            showMessage(`Mijoz xabari: "${randomMessage}"`, 'info');
+            
+            // Keyingi xabar uchun qayta chaqirish
+            simulateUserMessages();
+        }, 10000 + Math.random() * 20000);
+    }
+</script>
+</body>
+</html>

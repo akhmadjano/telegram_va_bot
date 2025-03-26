@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oqtepa Lavash | Foydalanuvchi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: #dc3545;
+            color: white;
+            padding: 15px 0;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 15px;
+        }
+        .product-title {
+            font-size: 18px;
+            margin: 0 0 10px 0;
+            color: #dc3545;
+        }
+        .product-price {
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #c82333;
+        }
+        .btn-admin {
+            background-color: #343a40;
+            color: white;
+            border: none;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .btn-admin:hover {
+            background-color: #23272b;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            margin: 0 10px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .cart-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #dc3545;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ffc107;
+            color: #333;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .details-list {
+            margin-left: 20px;
+        }
+        .details-list li {
+            margin-bottom: 5px;
+        }
+        @keyframes highlight {
+            0% { background-color: rgba(255, 255, 0, 0.5); }
+            100% { background-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Oqtepa Lavash | Yetkazib berish</h1>
+        <a href="admin.html" class="btn btn-admin">Admin</a>
+    </header>
+
+    <div class="products-grid" id="products-container">
+        <!-- Mahsulotlar shu yerda yuklanadi -->
+    </div>
+</div>
+
+<!-- Mahsulot tafsilotlari modali -->
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="modal-content">
+            <!-- Mahsulot tafsilotlari shu yerda yuklanadi -->
+        </div>
+    </div>
+</div>
+
+<!-- Savat modali -->
+<div id="cart-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeCartModal()">&times;</span>
+        <h2>Savat</h2>
+        <div id="cart-items">
+            <!-- Savatdagi mahsulotlar shu yerda ko'rsatiladi -->
+        </div>
+        <div id="cart-total" style="font-weight: bold; font-size: 18px; margin: 20px 0;"></div>
+        <button class="btn btn-primary" onclick="checkout()">Buyurtma berish</button>
+    </div>
+</div>
+
+<!-- Savat ikonkasi -->
+<div class="cart-icon" onclick="openCartModal()">
+    🛒
+    <div class="cart-count" id="cart-count">0</div>
+</div>
+
+<script>
+    // Mahsulotlarni localStorage'dan olish
+    let products = JSON.parse(localStorage.getItem('oqtepaProducts')) || [];
+    
+    // Agar mahsulotlar bo'sh bo'lsa, standart mahsulotlarni qo'shamiz
+    if (products.length === 0) {
+        products = [
+            {
+                id: 1,
+                name: "Juftlik Ramazon box 1",
+                price: 70000,
+                image: "https://oqtepalavash.uz/_next/image?url=https%3A%2F%2Fcc.oqtepalavash.uz%2Fapi%2Fimage%2Fe73ce2dc-ef49-4f51-b145-d119c654fdae.png&w=256&q=75",
+                description: "Ramazon boks 1 juftligini 50 000 so'm foyda bilan buyurtma qiling",
+                details: ["Kartoshka fri kichik - 2", "Ketchup - 2", "Naggetslar 2 dona - 2", "Pepsi, 0.3L - 2"],
+                status: "active"
+            },
+            {
+                id: 2,
+                name: "Juftlik Ramazon box 2",
+                price: 75000,
+                image: "https://oqtepalavash.uz/_next/image?url=https%3A%2F%2Fcc.oqtepalavash.uz%2Fapi%2Fimage%2Fe73ce2dc-ef49-4f51-b145-d119c654fdae.png&w=256&q=75",
+                description: "Ramazon boks 2 juftligini 55 000 so'm foyda bilan buyurtma qiling",
+                details: ["Kartoshka fri katta - 2", "Ketchup - 2", "Naggetslar 4 dona - 2", "Pepsi, 0.5L - 2"],
+                status: "active"
+            },
+            {
+                id: 3,
+                name: "Katta Lavash set",
+                price: 65000,
+                image: "https://oqtepalavash.uz/_next/image?url=https%3A%2F%2Fcc.oqtepalavash.uz%2Fapi%2Fimage%2Fb0c5a1c4-8c9f-4e2b-8b0a-5e5b5e5e5b5e.png&w=256&q=75",
+                description: "Katta hajmli lavash seti",
+                details: ["Lavash katta - 1", "Kartoshka fri - 1", "Salat - 1", "Pepsi, 0.5L - 1"],
+                status: "active"
+            }
+        ];
+        localStorage.setItem('oqtepaProducts', JSON.stringify(products));
+    }
+
+    // Savat
+    let cart = [];
+    let notifications = JSON.parse(localStorage.getItem('oqtepaNotifications')) || [];
+
+    // DOM yuklanganda mahsulotlarni yuklash
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProducts();
+        checkNotifications();
+        
+        // Mahsulotlar yangilanganda tekshirish
+        setInterval(() => {
+            const lastUpdate = localStorage.getItem('productUpdated');
+            if (lastUpdate && lastUpdate !== this.lastProductUpdate) {
+                this.lastProductUpdate = lastUpdate;
+                products = JSON.parse(localStorage.getItem('oqtepaProducts')) || [];
+                loadProducts();
+            }
+        }, 1000);
+    });
+
+    // Mahsulotlarni yuklash
+    function loadProducts() {
+        const productsContainer = document.getElementById('products-container');
+        productsContainer.innerHTML = '';
+
+        // Faol mahsulotlarni ko'rsatish
+        const activeProducts = products.filter(product => product.status === 'active');
+
+        if (activeProducts.length === 0) {
+            productsContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Hozircha mavjud mahsulotlar yo\'q</p>';
+            return;
+        }
+
+        activeProducts.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
+            productCard.innerHTML = `
+                <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/280x180?text=No+Image'">
+                <div class="product-info">
+                    <h3 class="product-title">${product.name}</h3>
+                    <div class="product-price">${product.price.toLocaleString()} so'm</div>
+                    <button class="btn btn-primary" onclick="showProductDetails(${product.id})">Ko'rish</button>
+                </div>
+            `;
+            productsContainer.appendChild(productCard);
+        });
+    }
+
+    // Mahsulot tafsilotlarini ko'rsatish
+    function showProductDetails(productId) {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+
+        const modalContent = document.getElementById('modal-content');
+        modalContent.innerHTML = `
+                <h2>${product.name}</h2>
+                <img src="${product.image}" alt="${product.name}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin:10px 0;" onerror="this.src='https://via.placeholder.com/600x300?text=No+Image'">
+                <p>${product.description}</p>
+                <h3>Mahsulot tarkibi:</h3>
+                <ul class="details-list">
+                    ${product.details.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="changeQuantity(${product.id}, -1)">-</button>
+                    <input type="text" class="quantity-input" id="quantity-${product.id}" value="1" readonly>
+                    <button class="quantity-btn" onclick="changeQuantity(${product.id}, 1)">+</button>
+                </div>
+                <div style="font-weight:bold; font-size:18px; margin:10px 0;">
+                    Umumiy: <span id="total-${product.id}">${product.price.toLocaleString()}</span> so'm
+                </div>
+                <button class="btn btn-primary" onclick="addToCart(${product.id})">Savatga qo'shish</button>
+            `;
+
+        document.getElementById('product-modal').style.display = 'block';
+    }
+
+    // Miqdorni o'zgartirish
+    function changeQuantity(productId, change) {
+        const input = document.getElementById(`quantity-${productId}`);
+        let quantity = parseInt(input.value) + change;
+        if (quantity < 1) quantity = 1;
+        input.value = quantity;
+
+        const product = products.find(p => p.id === productId);
+        document.getElementById(`total-${productId}`).textContent =
+            (product.price * quantity).toLocaleString();
+    }
+
+    // Savatga qo'shish
+    function addToCart(productId) {
+        const input = document.getElementById(`quantity-${productId}`);
+        const quantity = parseInt(input.value);
+        const product = products.find(p => p.id === productId);
+
+        // Savatda borligini tekshirish
+        const existingItem = cart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: quantity,
+                image: product.image,
+                details: product.details
+            });
+        }
+
+        updateCartCount();
+        closeModal();
+        alert(`${product.name} savatga qo'shildi!`);
+    }
+
+    // Modalni yopish
+    function closeModal() {
+        document.getElementById('product-modal').style.display = 'none';
+    }
+
+    // Savat modali
+    function openCartModal() {
+        const cartItemsContainer = document.getElementById('cart-items');
+        cartItemsContainer.innerHTML = '';
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p>Savat bo\'sh</p>';
+            document.getElementById('cart-total').textContent = '';
+        } else {
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                const cartItem = document.createElement('div');
+                cartItem.style.display = 'flex';
+                cartItem.style.alignItems = 'center';
+                cartItem.style.marginBottom = '15px';
+                cartItem.style.paddingBottom = '15px';
+                cartItem.style.borderBottom = '1px solid #eee';
+
+                cartItem.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" style="width:60px; height:60px; object-fit:cover; border-radius:4px; margin-right:10px;" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                        <div style="flex-grow:1;">
+                            <h3 style="margin:0 0 5px 0;">${item.name}</h3>
+                            <div style="display:flex; justify-content:space-between;">
+                                <div>
+                                    ${item.price.toLocaleString()} so'm ×
+                                    <button onclick="updateCartItem(${item.id}, -1)" style="background:none; border:none; cursor:pointer;">-</button>
+                                    ${item.quantity}
+                                    <button onclick="updateCartItem(${item.id}, 1)" style="background:none; border:none; cursor:pointer;">+</button>
+                                </div>
+                                <div style="font-weight:bold;">${itemTotal.toLocaleString()} so'm</div>
+                            </div>
+                            <div class="details-list" style="margin-top: 5px; font-size: 14px; color: #666;">
+                                <ul>
+                                    ${item.details.map(detail => `<li>${detail}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" style="background:none; border:none; cursor:pointer; color:#dc3545; margin-left:10px;">×</button>
+                    `;
+
+                cartItemsContainer.appendChild(cartItem);
+            });
+
+            document.getElementById('cart-total').textContent = `Jami: ${total.toLocaleString()} so'm`;
+        }
+
+        document.getElementById('cart-modal').style.display = 'block';
+    }
+
+    function closeCartModal() {
+        document.getElementById('cart-modal').style.display = 'none';
+    }
+
+    // Savatdagi mahsulotni yangilash
+    function updateCartItem(productId, change) {
+        const item = cart.find(item => item.id === productId);
+        if (!item) return;
+
+        item.quantity += change;
+
+        if (item.quantity < 1) {
+            cart = cart.filter(item => item.id !== productId);
+        }
+
+        openCartModal();
+        updateCartCount();
+    }
+
+    // Savatdan mahsulotni o'chirish
+    function removeFromCart(productId) {
+        cart = cart.filter(item => item.id !== productId);
+        openCartModal();
+        updateCartCount();
+    }
+
+    // Savatdagi mahsulotlar sonini yangilash
+    function updateCartCount() {
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
+        document.getElementById('cart-count').textContent = count;
+    }
+
+    // Buyurtma berish
+    function checkout() {
+        if (cart.length === 0) {
+            alert('Savat bo\'sh!');
+            return;
+        }
+
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        // Create order object
+        const order = {
+            id: Date.now(),
+            customerName: prompt("Ismingizni kiriting:"),
+            phoneNumber: prompt("Telefon raqamingizni kiriting:"),
+            address: prompt("Manzilingizni kiriting:"),
+            items: [...cart],
+            total: total,
+            status: "Yangi",
+            date: new Date().toLocaleString(),
+            completed: false,
+            notified: false
+        };
+
+        // Save order to localStorage
+        saveOrder(order);
+        
+        // Notification for admin
+        const notification = {
+            id: Date.now(),
+            message: `Yangi buyurtma #${order.id} (${order.customerName})`,
+            orderId: order.id,
+            date: new Date().toLocaleString(),
+            read: false
+        };
+        saveNotification(notification);
+        
+        // Play sound for new order
+        playNewOrderSound();
+        
+        alert(`Buyurtma berildi!\nBuyurtma raqami: #${order.id}\nJami summa: ${total.toLocaleString()} so'm`);
+        
+        // Savatni tozalash
+        cart = [];
+        updateCartCount();
+        closeCartModal();
+    }
+
+    function saveOrder(order) {
+        let orders = JSON.parse(localStorage.getItem('oqtepaOrders')) || [];
+        orders.push(order);
+        localStorage.setItem('oqtepaOrders', JSON.stringify(orders));
+    }
+
+    function saveNotification(notification) {
+        let notifications = JSON.parse(localStorage.getItem('oqtepaNotifications')) || [];
+        notifications.push(notification);
+        localStorage.setItem('oqtepaNotifications', JSON.stringify(notifications));
+    }
+
+    function playNewOrderSound() {
+        const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+        audio.play().catch(e => console.log("Audio play error:", e));
+    }
+
+    function checkNotifications() {
+        const userPhone = localStorage.getItem('oqtepaUserPhone');
+        if (!userPhone) return;
+        
+        const orders = JSON.parse(localStorage.getItem('oqtepaOrders')) || [];
+        const userOrders = orders.filter(order => 
+            order.phoneNumber === userPhone && order.status === "Yakunlandi" && !order.notified
+        );
+        
+        if (userOrders.length > 0) {
+            userOrders.forEach(order => {
+                alert(`Hurmatli ${order.customerName}, sizning #${order.id} raqamli buyurtmangiz yetkazib berildi!`);
+                order.notified = true;
+            });
+            localStorage.setItem('oqtepaOrders', JSON.stringify(orders));
+        }
+    }
+</script>
+</body>
+</html>

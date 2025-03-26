@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oqtepa Lavash | Mahsulotlar Boshqaruvi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: #dc3545;
+            color: white;
+            padding: 15px 0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-danger:hover {
+            background-color: #e0a800;
+            transform: translateY(-2px);
+        }
+        .btn-back {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .products-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .product-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 100px 120px 150px;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+        .product-row:hover {
+            background-color: #f8f9fa;
+        }
+        .product-row.header {
+            font-weight: bold;
+            background-color: #343a40;
+            color: white;
+        }
+        .product-image {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.3s;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.3s;
+        }
+        .close-btn:hover {
+            color: #343a40;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus {
+            border-color: #dc3545;
+            outline: none;
+        }
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .details-input {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .details-input input {
+            flex-grow: 1;
+            margin-right: 8px;
+        }
+        .add-detail {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .add-detail:hover {
+            background-color: #218838;
+        }
+        .remove-detail {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 30px;
+            cursor: pointer;
+        }
+        .remove-detail:hover {
+            background-color: #c82333;
+        }
+        .status-active {
+            color: #28a745;
+            font-weight: 500;
+        }
+        .status-inactive {
+            color: #dc3545;
+            font-weight: 500;
+        }
+        .preview-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .no-products {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-size: 18px;
+        }
+        @media (max-width: 768px) {
+            .product-row {
+                grid-template-columns: 80px 1fr 80px 100px;
+                grid-template-rows: auto auto;
+                padding: 10px;
+            }
+            .product-row .action-buttons {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
+            .product-image {
+                width: 60px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <a href="admin.html" class="btn btn-secondary btn-back">Orqaga</a>
+        <h1>Oqtepa Lavash | Mahsulotlar Boshqaruvi</h1>
+        <button class="btn btn-primary" onclick="openAddProductModal()" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%);">
+            + Yangi mahsulot
+        </button>
+    </header>
+
+    <div class="products-list">
+        <div class="product-row header">
+            <div>Rasm</div>
+            <div>Nomi</div>
+            <div>Narxi</div>
+            <div>Holati</div>
+            <div>Amallar</div>
+        </div>
+        <div id="products-list">
+            <!-- Mahsulotlar ro'yxati shu yerda yuklanadi -->
+        </div>
+    </div>
+</div>
+
+<!-- Mahsulot qo'shish/tahrirlash modali -->
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="modal-title">Yangi mahsulot qo'shish</h2>
+        <form id="product-form" onsubmit="saveProduct(event)">
+            <input type="hidden" id="product-id">
+            
+            <div class="form-group">
+                <label for="product-name">Mahsulot nomi</label>
+                <input type="text" id="product-name" required placeholder="Masalan: Mol go'shtli lavash">
+            </div>
+            
+            <div class="form-group">
+                <label for="product-price">Narxi (so'm)</label>
+                <input type="number" id="product-price" required placeholder="Masalan: 25000">
+            </div>
+            
+            <div class="form-group">
+                <label for="product-image">Rasm URL manzili</label>
+                <input type="text" id="product-image" required placeholder="https://example.com/image.jpg" oninput="updateImagePreview()">
+                <img id="image-preview" class="preview-image" alt="Rasm ko'rinishi">
+            </div>
+            
+            <div class="form-group">
+                <label for="product-description">Tavsif</label>
+                <textarea id="product-description" required placeholder="Mahsulot haqida qisqacha tavsif"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Tarkibi (har birini alohida qatorga yozing)</label>
+                <div id="product-details-container">
+                    <!-- Tarkib qismlari shu yerda yuklanadi -->
+                </div>
+                <button type="button" class="add-detail" onclick="addDetailField()">+ Tarkib qismi qo'shish</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-status">Holati</label>
+                <select id="product-status">
+                    <option value="active">Faol</option>
+                    <option value="inactive">Nofaol</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Saqlash</button>
+        </form>
+    </div>
+</div>
+
+<!-- Xabar bildirishnomasi -->
+<div id="message-notification" class="message-notification" style="display: none;">
+    <span id="notification-message"></span>
+</div>
+
+<script>
+    // Mahsulotlarni localStorage'dan olish
+    let products = JSON.parse(localStorage.getItem('oqtepaProducts')) || [];
+    
+    // DOM yuklanganda mahsulotlarni yuklash
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProducts();
+        
+        // Agar mahsulotlar bo'sh bo'lsa, bir nechta namunalar qo'shish
+        if (products.length === 0) {
+            addSampleProducts();
+        }
+    });
+
+    // Mahsulotlarni yuklash
+    function loadProducts() {
+        const productsList = document.getElementById('products-list');
+        productsList.innerHTML = '';
+
+        if (products.length === 0) {
+            productsList.innerHTML = '<div class="no-products">Mahsulotlar mavjud emas. "Yangi mahsulot" tugmasi orqali qo\'shing</div>';
+            return;
+        }
+
+        // Mahsulotlarni ID bo'yicha teskari tartibda saralash (eng yangilari birinchi)
+        products.sort((a, b) => b.id - a.id);
+
+        products.forEach(product => {
+            const productRow = document.createElement('div');
+            productRow.className = 'product-row';
+            
+            productRow.innerHTML = `
+                <div>
+                    <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/80x60?text=No+Image'">
+                </div>
+                <div>
+                    <div style="font-weight: 500; margin-bottom: 5px;">${product.name}</div>
+                    <div style="font-size: 14px; color: #6c757d;">${product.description.substring(0, 50)}${product.description.length > 50 ? '...' : ''}</div>
+                </div>
+                <div>${product.price.toLocaleString()} so'm</div>
+                <div class="${product.status === 'active' ? 'status-active' : 'status-inactive'}">
+                    ${product.status === 'active' ? 'Faol' : 'Nofaol'}
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="editProduct(${product.id})">Tahrirlash</button>
+                    <button class="btn btn-danger" onclick="deleteProduct(${product.id})">O'chirish</button>
+                </div>
+            `;
+
+            productsList.appendChild(productRow);
+        });
+    }
+
+    // Modalni ochish (yangi mahsulot qo'shish)
+    function openAddProductModal() {
+        document.getElementById('modal-title').textContent = "Yangi mahsulot qo'shish";
+        document.getElementById('product-id').value = '';
+        document.getElementById('product-form').reset();
+        document.getElementById('product-details-container').innerHTML = '';
+        document.getElementById('image-preview').style.display = 'none';
+        
+        // Boshlang'ich tarkib maydonini qo'shish
+        addDetailField();
+        
+        document.getElementById('product-modal').style.display = 'block';
+    }
+
+    // Modalni yopish
+    function closeModal() {
+        document.getElementById('product-modal').style.display = 'none';
+    }
+
+    // Tarkib maydonini qo'shish
+    function addDetailField(value = '') {
+        const container = document.getElementById('product-details-container');
+        const detailDiv = document.createElement('div');
+        detailDiv.className = 'details-input';
+        
+        detailDiv.innerHTML = `
+            <input type="text" placeholder="Masalan: Qo'y go'shti" value="${value}">
+            <button type="button" class="remove-detail" onclick="this.parentElement.remove()">×</button>
+        `;
+        
+        container.appendChild(detailDiv);
+    }
+
+    // Rasm ko'rinishini yangilash
+    function updateImagePreview() {
+        const imageUrl = document.getElementById('product-image').value;
+        const preview = document.getElementById('image-preview');
+        
+        if (imageUrl) {
+            preview.src = imageUrl;
+            preview.style.display = 'block';
+            preview.onerror = function() {
+                preview.style.display = 'none';
+            };
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    // Mahsulotni tahrirlash
+    function editProduct(productId) {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+        
+        document.getElementById('modal-title').textContent = "Mahsulotni tahrirlash";
+        document.getElementById('product-id').value = product.id;
+        document.getElementById('product-name').value = product.name;
+        document.getElementById('product-price').value = product.price;
+        document.getElementById('product-image').value = product.image;
+        document.getElementById('product-description').value = product.description;
+        document.getElementById('product-status').value = product.status;
+        
+        // Rasm ko'rinishini yangilash
+        updateImagePreview();
+        
+        // Tarkib maydonlarini tozalash va yangilash
+        const detailsContainer = document.getElementById('product-details-container');
+        detailsContainer.innerHTML = '';
+        
+        if (product.details && product.details.length > 0) {
+            product.details.forEach(detail => {
+                addDetailField(detail);
+            });
+        } else {
+            addDetailField();
+        }
+        
+        document.getElementById('product-modal').style.display = 'block';
+    }
+
+    // Mahsulotni saqlash
+    function saveProduct(event) {
+        event.preventDefault();
+        
+        const id = document.getElementById('product-id').value;
+        const name = document.getElementById('product-name').value;
+        const price = parseInt(document.getElementById('product-price').value);
+        const image = document.getElementById('product-image').value;
+        const description = document.getElementById('product-description').value;
+        const status = document.getElementById('product-status').value;
+        
+        // Tarkib qismlarini yig'ish
+        const detailInputs = document.querySelectorAll('#product-details-container input');
+        const details = Array.from(detailInputs).map(input => input.value).filter(detail => detail.trim() !== '');
+        
+        if (id) {
+            // Tahrirlash
+            const index = products.findIndex(p => p.id === parseInt(id));
+            if (index !== -1) {
+                products[index] = {
+                    id: parseInt(id),
+                    name,
+                    price,
+                    image,
+                    description,
+                    details,
+                    status
+                };
+                showMessage("Mahsulot muvaffaqiyatli tahrirlandi!", "success");
+            }
+        } else {
+            // Yangi mahsulot
+            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+            products.push({
+                id: newId,
+                name,
+                price,
+                image,
+                description,
+                details,
+                status
+            });
+            showMessage("Yangi mahsulot muvaffaqiyatli qo'shildi!", "success");
+        }
+        
+        // Saqlash va yangilash
+        localStorage.setItem('oqtepaProducts', JSON.stringify(products));
+        loadProducts();
+        closeModal();
+        
+        // Mahsulot yangilanganda foydalanuvchi interfeysini yangilash
+        localStorage.setItem('productUpdated', Date.now().toString());
+    }
+
+    // Mahsulotni o'chirish
+    function deleteProduct(productId) {
+        if (confirm(`"${products.find(p => p.id === productId)?.name}" mahsulotini o'chirishni tasdiqlaysizmi?`)) {
+            products = products.filter(p => p.id !== productId);
+            localStorage.setItem('oqtepaProducts', JSON.stringify(products));
+            loadProducts();
+            showMessage("Mahsulot muvaffaqiyatli o'chirildi!", "warning");
+            
+            // Mahsulot o'chirilganda foydalanuvchi interfeysini yangilash
+            localStorage.setItem('productUpdated', Date.now().toString());
+        }
+    }
+
+    // Xabar bildirishnomasini ko'rsatish
+    function showMessage(message, type = 'info') {
+        const notification = document.getElementById('message-notification');
+        const messageSpan = document.getElementById('notification-message');
+        
+        // Turi bo'yicha rangni belgilash
+        notification.style.backgroundColor = 
+            type === 'success' ? '#28a745' : 
+            type === 'error' ? '#dc3545' : 
+            type === 'warning' ? '#ffc107' : 
+            '#17a2b8';
+        
+        // Agar xato bo'lsa, matn rangi oq bo'lsin
+        notification.style.color = type === 'warning' ? '#212529' : 'white';
+        
+        messageSpan.textContent = message;
+        notification.style.display = 'block';
+        
+        // Animatsiya bilan ko'rsatish
+        notification.style.animation = 'slideIn 0.5s';
+        
+        // 3 soniyadan keyin yashirish
+        setTimeout(() => {
+            notification.style.animation = 'fadeOut 0.5s forwards';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 500);
+        }, 3000);
+    }
+
+    // Animatsiyalar uchun CSS qo'shish
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .message-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Namuna mahsulotlar qo'shish
+    function addSampleProducts() {
+        products = [
+            {
+                id: 1,
+                name: "Mol go'shtli lavash",
+                price: 28000,
+                image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_1280.jpg",
+                description: "Yupqa non bilan tayyorlangan, mol go'shti, yangi sabzavotlar va maxsus sous",
+                details: ["Yupqa non", "Mol go'shti", "Pomidor", "Bodring", "Mayonez"],
+                status: "active"
+            },
+            {
+                id: 2,
+                name: "Tovuq go'shtli lavash",
+                price: 25000,
+                image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_1280.jpg",
+                description: "Yupqa non bilan tayyorlangan, tovuq go'shti, yangi sabzavotlar va maxsus sous",
+                details: ["Yupqa non", "Tovuq go'shti", "Pomidor", "Bodring", "Mayonez"],
+                status: "active"
+            },
+            {
+                id: 3,
+                name: "Pishloqli lavash",
+                price: 22000,
+                image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_1280.jpg",
+                description: "Yupqa non bilan tayyorlangan, pishloq, yangi sabzavotlar va maxsus sous",
+                details: ["Yupqa non", "Pishloq", "Pomidor", "Bodring", "Mayonez"],
+                status: "active"
+            }
+        ];
+        
+        localStorage.setItem('oqtepaProducts', JSON.stringify(products));
+        loadProducts();
+    }
+</script>
+</body>
+</html>
